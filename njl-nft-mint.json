@@ -1,0 +1,18 @@
+{
+  "title": "nft-njl Metadata",
+  "type": "object",
+  "properties": {
+      "name": {
+          "type": "string",
+          "description": "nft-njl-v3-name"
+      },
+      "description": {
+          "type": "string",
+          "description": "nft-njl-v3-description"
+      },
+      "image": {
+          "type": "string",
+          "description": "https://i.seadn.io/gae/xXSwSVRDLjXuZUjy59yipdwHYhU2SP9PJmU1eB7pMfS7D5r_dU7aWihq64nKFAxrxD0QjBb9OAyWSgVTulCD_1mSZcI9N-27i4eAuJQ?auto=format&w=256"
+      }
+  }
+}
