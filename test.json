@@ -1,0 +1,931 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Backend interface refactored for RESTful style",
+        "title": "GiveFi V1 API",
+        "contact": {},
+        "version": "2.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/authorizations/wallet": {
+            "post": {
+                "description": "Get user jwt token by wallet address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "login-by-wallet-address",
+                "parameters": [
+                    {
+                        "description": "wallet address",
+                        "name": "wallet",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/proto.WalletLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "jwt token",
+                        "schema": {
+                            "$ref": "#/definitions/proto.JwtAuthorizationResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/authorizations/{wallet_address}/nonce": {
+            "get": {
+                "description": "Get nonce by address, only used by wallet address login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "get-nonce-by-address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "wallet address",
+                        "name": "wallet_address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "nonce",
+                        "schema": {
+                            "$ref": "#/definitions/proto.NonceResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns": {
+            "get": {
+                "description": "Get campaigns",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "get-campaigns",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "pagination select current page, default: 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pagination size, default: 20",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 2,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Campaign prize type",
+                        "name": "campaign_prize_type",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 3,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Campaign status",
+                        "name": "campaign_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campaign create user wallet address",
+                        "name": "user_wallet_address",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "campaign list",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/proto.PageData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "list": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/proto.CampaignBasicResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "GiveFiAuth": []
+                    }
+                ],
+                "description": "Create campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "create-campaign",
+                "parameters": [
+                    {
+                        "description": "create campaign data",
+                        "name": "code",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/proto.CampaignCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message",
+                        "schema": {
+                            "$ref": "#/definitions/proto.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/missions/{campaign_prize_mission_id}/verify": {
+            "put": {
+                "security": [
+                    {
+                        "GiveFiAuth": []
+                    }
+                ],
+                "description": "Verify campaign prize mission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "verify-campaign-prize-mission",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "campaign prize mission id",
+                        "name": "campaign_prize_mission_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message",
+                        "schema": {
+                            "$ref": "#/definitions/proto.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/campaigns/{campaign_id}": {
+            "get": {
+                "description": "Get campaign info by campaign id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "get-campaign-info",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "campaign id",
+                        "name": "campaign_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "campaign info",
+                        "schema": {
+                            "$ref": "#/definitions/proto.CampaignInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/languages": {
+            "get": {
+                "description": "Get languages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Language"
+                ],
+                "summary": "get-languages",
+                "responses": {
+                    "200": {
+                        "description": "languages list",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/proto.ListData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "list": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/proto.LanguageResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "post": {
+                "security": [
+                    {
+                        "ComunionAuth": []
+                    }
+                ],
+                "description": "Upload file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "upload-file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "file URL",
+                        "schema": {
+                            "$ref": "#/definitions/proto.UploadResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/connection/{type}": {
+            "post": {
+                "security": [
+                    {
+                        "GiveFiAuth": []
+                    }
+                ],
+                "description": "Thrid-Party Connection user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "thrid-party-connection",
+                "parameters": [
+                    {
+                        "description": "callback code for github oauth",
+                        "name": "code",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/proto.OAuthByThridPartyRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "thrid-party type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message",
+                        "schema": {
+                            "$ref": "#/definitions/proto.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/nfts": {
+            "get": {
+                "security": [
+                    {
+                        "GiveFiAuth": []
+                    }
+                ],
+                "description": "Get user NFTs by auth",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get-user-nfts",
+                "responses": {
+                    "200": {
+                        "description": "nft list",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/proto.ListData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "list": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/proto.UserNFTsResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.UserCampaignPrizeMissionVerify": {
+            "type": "object",
+            "required": [
+                "campaign_prize_mission_id",
+                "id",
+                "user_wallet_address",
+                "verify"
+            ],
+            "properties": {
+                "campaign_prize_mission_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "user_wallet_address": {
+                    "type": "string"
+                },
+                "verify": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.UserPrize": {
+            "type": "object",
+            "required": [
+                "amount",
+                "campaign_id",
+                "campaign_prize_id",
+                "contract_address",
+                "id",
+                "is_exchange",
+                "type",
+                "user_wallet_address"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "campaign_prize_id": {
+                    "type": "integer"
+                },
+                "contract_address": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_exchange": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "description": "Campaign prize type",
+                    "type": "integer"
+                },
+                "user_wallet_address": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.CampaignBasicResponse": {
+            "type": "object",
+            "required": [
+                "campaign_prize",
+                "cover",
+                "description",
+                "ended_at",
+                "id",
+                "is_ended_at",
+                "started_at",
+                "title",
+                "user_wallet_address"
+            ],
+            "properties": {
+                "campaign_prize": {
+                    "description": "Campaign prize",
+                    "$ref": "#/definitions/proto.CampaignPrizeResponse"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "ended_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_ended_at": {
+                    "type": "boolean"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "user_wallet_address": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.CampaignCreateRequest": {
+            "type": "object",
+            "required": [
+                "campaign_prize",
+                "cover",
+                "description",
+                "started_at",
+                "title"
+            ],
+            "properties": {
+                "campaign_prize": {
+                    "description": "Campaign prize",
+                    "$ref": "#/definitions/proto.CampaignPrize"
+                },
+                "cover": {
+                    "description": "Campaign cover",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Campaign description",
+                    "type": "string"
+                },
+                "ended_at": {
+                    "description": "Campaign ended at",
+                    "type": "integer"
+                },
+                "is_ended_at": {
+                    "description": "Campaign has ended at, default false",
+                    "type": "boolean"
+                },
+                "started_at": {
+                    "description": "Campaign started at",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Campaign title",
+                    "type": "string"
+                }
+            }
+        },
+        "proto.CampaignInfoResponse": {
+            "type": "object",
+            "required": [
+                "cover",
+                "description",
+                "ended_at",
+                "id",
+                "is_ended_at",
+                "started_at",
+                "title",
+                "user_wallet_address"
+            ],
+            "properties": {
+                "campaign_prize": {
+                    "description": "Campaign prize",
+                    "$ref": "#/definitions/proto.CampaignPrizeResponse"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "ended_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_ended_at": {
+                    "type": "boolean"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "user_wallet_address": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.CampaignPrize": {
+            "type": "object",
+            "required": [
+                "campaign_prize_missions",
+                "chain_id",
+                "contract_address",
+                "number_of_units",
+                "total",
+                "type"
+            ],
+            "properties": {
+                "campaign_prize_missions": {
+                    "description": "Campaign prize missions",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/proto.CampaignPrizeMission"
+                    }
+                },
+                "chain_id": {
+                    "description": "Campaign prize chain id",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "contract_address": {
+                    "description": "Campaign prize contract address",
+                    "type": "string"
+                },
+                "number_of_units": {
+                    "description": "Campaign prize per person numer of units",
+                    "type": "number",
+                    "minimum": 1
+                },
+                "total": {
+                    "description": "Campaign prize total",
+                    "type": "number",
+                    "minimum": 1
+                },
+                "type": {
+                    "description": "Campaign prize type",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 1
+                }
+            }
+        },
+        "proto.CampaignPrizeMission": {
+            "type": "object",
+            "required": [
+                "title",
+                "type",
+                "value"
+            ],
+            "properties": {
+                "title": {
+                    "description": "Campaign prize mission title",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Campaign prize mission type",
+                    "type": "integer"
+                },
+                "value": {
+                    "description": "Campaign prize mission value, Task structure stored according to the protocol",
+                    "type": "string"
+                }
+            }
+        },
+        "proto.CampaignPrizeMissionResponse": {
+            "type": "object",
+            "required": [
+                "campaign_prize_id",
+                "id",
+                "title",
+                "type",
+                "value"
+            ],
+            "properties": {
+                "campaign_prize_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mission_verify": {
+                    "$ref": "#/definitions/model.UserCampaignPrizeMissionVerify"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Campaign prize mission type",
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.CampaignPrizeResponse": {
+            "type": "object",
+            "required": [
+                "campaign_id",
+                "chain_id",
+                "contract_address",
+                "id",
+                "number_of_units",
+                "remaining_total",
+                "total",
+                "type"
+            ],
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "campaign_prize_missions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/proto.CampaignPrizeMissionResponse"
+                    }
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "contract_address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "number_of_units": {
+                    "type": "number"
+                },
+                "remaining_total": {
+                    "type": "number"
+                },
+                "total": {
+                    "type": "number"
+                },
+                "type": {
+                    "description": "Campaign prize type",
+                    "type": "integer"
+                },
+                "user_prize": {
+                    "$ref": "#/definitions/model.UserPrize"
+                }
+            }
+        },
+        "proto.JwtAuthorizationResponse": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "description": "Token",
+                    "type": "string"
+                }
+            }
+        },
+        "proto.LanguageResponse": {
+            "type": "object",
+            "required": [
+                "code",
+                "id",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.ListData": {
+            "type": "object",
+            "required": [
+                "total"
+            ],
+            "properties": {
+                "list": {
+                    "description": "data list"
+                },
+                "total": {
+                    "description": "total",
+                    "type": "integer"
+                }
+            }
+        },
+        "proto.MessageResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "description": "Message",
+                    "type": "string"
+                }
+            }
+        },
+        "proto.NonceResponse": {
+            "type": "object",
+            "required": [
+                "expiration_time",
+                "nonce"
+            ],
+            "properties": {
+                "expiration_time": {
+                    "description": "expiration time",
+                    "type": "string"
+                },
+                "nonce": {
+                    "description": "nonce",
+                    "type": "string"
+                }
+            }
+        },
+        "proto.OAuthByThridPartyRequest": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "description": "callback code for third-party(google and github) oauth",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "callback state",
+                    "type": "string"
+                }
+            }
+        },
+        "proto.PageData": {
+            "type": "object",
+            "required": [
+                "total",
+                "total"
+            ],
+            "properties": {
+                "list": {
+                    "description": "data list"
+                },
+                "page": {
+                    "description": "pagination select current page, default: 1",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "pagination size, default: 20",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "total",
+                    "type": "integer"
+                }
+            }
+        },
+        "proto.UploadResponse": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.UserNFTsResponse": {
+            "type": "object",
+            "required": [
+                "contract_address",
+                "token_id"
+            ],
+            "properties": {
+                "contract_address": {
+                    "type": "string"
+                },
+                "token_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "proto.WalletLoginRequest": {
+            "type": "object",
+            "required": [
+                "nonce",
+                "signature",
+                "wallet_address"
+            ],
+            "properties": {
+                "nonce": {
+                    "description": "Wallet nonce",
+                    "type": "string"
+                },
+                "signature": {
+                    "description": "Wallet signature",
+                    "type": "string"
+                },
+                "wallet_address": {
+                    "description": "Wallet address",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "GiveFiAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
